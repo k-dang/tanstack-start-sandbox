@@ -10,17 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
 import { Route as DemoApiTqTodosRouteImport } from './routes/demo/api.tq-todos'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoStartServerFuncsRoute = DemoStartServerFuncsRouteImport.update({
-  id: '/demo/start/server-funcs',
-  path: '/demo/start/server-funcs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoApiTqTodosRoute = DemoApiTqTodosRouteImport.update({
@@ -32,31 +26,27 @@ const DemoApiTqTodosRoute = DemoApiTqTodosRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
-  '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
-  '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
-  '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/demo/api/tq-todos' | '/demo/start/server-funcs'
+  fullPaths: '/' | '/demo/api/tq-todos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/demo/api/tq-todos' | '/demo/start/server-funcs'
-  id: '__root__' | '/' | '/demo/api/tq-todos' | '/demo/start/server-funcs'
+  to: '/' | '/demo/api/tq-todos'
+  id: '__root__' | '/' | '/demo/api/tq-todos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DemoApiTqTodosRoute: typeof DemoApiTqTodosRoute
-  DemoStartServerFuncsRoute: typeof DemoStartServerFuncsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -66,13 +56,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/start/server-funcs': {
-      id: '/demo/start/server-funcs'
-      path: '/demo/start/server-funcs'
-      fullPath: '/demo/start/server-funcs'
-      preLoaderRoute: typeof DemoStartServerFuncsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/api/tq-todos': {
@@ -88,7 +71,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DemoApiTqTodosRoute: DemoApiTqTodosRoute,
-  DemoStartServerFuncsRoute: DemoStartServerFuncsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
