@@ -1,12 +1,24 @@
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import type { Pokemon } from "@/db/schema";
 import { useAddToCart } from "@/hooks/use-cart";
 
 export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
+  const [quantity, setQuantity] = useState(1);
   const { isPending, mutate } = useAddToCart();
 
   const handleAddToCart = () => {
-    mutate(pokemon.id);
+    mutate({ pokemonId: pokemon.id, quantity });
+    toast.success(`${quantity} ${pokemon.name} added to cart`);
+  };
+
+  const handleDecrement = () => {
+    setQuantity((prev) => Math.max(1, prev - 1));
+  };
+
+  const handleIncrement = () => {
+    setQuantity((prev) => prev + 1);
   };
 
   return (
@@ -34,6 +46,33 @@ export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
           <div className="text-sm font-semibold text-gray-800 capitalize truncate w-full group-hover:text-blue-600 transition-colors duration-300">
             {pokemon.name}
           </div>
+        </div>
+
+        {/* Quantity Selector */}
+        <div className="w-full flex items-center justify-center gap-2 mt-2">
+          <Button
+            onClick={handleDecrement}
+            disabled={quantity <= 1 || isPending}
+            variant="outline"
+            size="sm"
+            className="h-8 w-8 p-0 flex items-center justify-center"
+            aria-label="Decrease quantity"
+          >
+            −
+          </Button>
+          <span className="text-sm font-medium text-gray-700 min-w-8 text-center">
+            {quantity}
+          </span>
+          <Button
+            onClick={handleIncrement}
+            disabled={isPending}
+            variant="outline"
+            size="sm"
+            className="h-8 w-8 p-0 flex items-center justify-center"
+            aria-label="Increase quantity"
+          >
+            +
+          </Button>
         </div>
 
         {/* Add to Cart Button */}
