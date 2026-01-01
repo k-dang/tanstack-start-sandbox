@@ -33,9 +33,8 @@ const updateCartQuantityFn = createServerFn({ method: "POST" })
 export const Route = createFileRoute("/cart")({
   component: RouteComponent,
   pendingComponent: () => <div>Loading cart...</div>,
-  ssr: false,
   loader: async () => {
-    const cartId = getCartId();
+    const cartId = await getCartId();
     const cartItems = await getCartItemsFn({ data: { cartId } });
     return { cartId, cartItems };
   },

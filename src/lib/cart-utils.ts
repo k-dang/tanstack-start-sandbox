@@ -1,12 +1,31 @@
-import { createClientOnlyFn } from "@tanstack/react-start";
+import { createServerFn } from "@tanstack/react-start";
+import { useSession } from "@tanstack/react-start/server";
 
-const CART_ID_KEY = "pokemon-cart-id";
+type CartSession = {
+  cartId?: number;
+};
 
-export const getCartId = createClientOnlyFn((): number | null => {
-  const cartId = localStorage.getItem(CART_ID_KEY);
-  return cartId ? Number.parseInt(cartId, 10) : null;
+function useCartSession() {
+  const secret = process.env.SESSION_SECRET;
+  if (!secret) {
+    throw new Error(
+      "SESSION_SECRET environment variable is required. Please set it in your .env file.",
+    );
+  }
+  return useSession<CartSession>({
+    name: "pokemon-cart",
+    password: secret,
+  });
+}
+
+export const getCartId = createServerFn({ method: "GET" }).handler(async () => {
+  const session = await useCartSession();
+  return session.data.cartId ?? null;
 });
 
-export const setCartId = createClientOnlyFn((cartId: number): void => {
-  localStorage.setItem(CART_ID_KEY, cartId.toString());
-});
+export const setCartId = createServerFn({ method: "POST" })
+  .inputValidator((cartId: number) => cartId)
+  .handler(async ({ data: cartId }) => {
+    const session = await useCartSession();
+    await session.update({ cartId });
+  });

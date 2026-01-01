@@ -75,7 +75,6 @@ export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
           </Button>
         </div>
 
-        {/* Add to Cart Button */}
         <Button
           onClick={handleAddToCart}
           disabled={isPending}
@@ -83,7 +82,7 @@ export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
           size="sm"
           className="w-full mt-2"
         >
-          {isPending ? "Adding..." : "Add to Cart"}
+          Add to Cart
         </Button>
       </div>
     </div>
