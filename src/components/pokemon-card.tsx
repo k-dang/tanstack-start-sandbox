@@ -33,7 +33,7 @@ export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
           <img
             src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`}
             alt={pokemon.name}
-            className="w-full h-full object-contain"
+            className="object-contain"
             loading="lazy"
           />
         </div>

@@ -1,6 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+import { RefreshCw } from "lucide-react";
 import PokemonCard from "@/components/pokemon-card";
+import { Button } from "@/components/ui/button";
 import { getRandomPokemon } from "@/db";
 
 /*
@@ -27,6 +29,7 @@ export const Route = createFileRoute("/")({
 
 function App() {
   const pokemon = Route.useLoaderData();
+  const router = useRouter();
 
   return (
     <div>
@@ -35,10 +38,17 @@ function App() {
           <p className="text-gray-500">No Pokemon available at the moment.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          {pokemon.map((p) => (
-            <PokemonCard key={p.id} pokemon={p} />
-          ))}
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <Button onClick={() => router.invalidate()}>
+              <RefreshCw className="size-4" /> Refresh
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {pokemon.map((p) => (
+              <PokemonCard key={p.id} pokemon={p} />
+            ))}
+          </div>
         </div>
       )}
     </div>
