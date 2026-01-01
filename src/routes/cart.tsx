@@ -165,7 +165,7 @@ function CartComponent() {
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
-                  <span className="text-lg font-medium text-gray-900 min-w-8 text-center">
+                  <span className="font-medium text-gray-900 min-w-8 text-center">
                     {item.quantity}
                   </span>
                   <Button

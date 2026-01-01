@@ -1,3 +1,4 @@
+import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -58,7 +59,7 @@ export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
             className="h-8 w-8 p-0 flex items-center justify-center"
             aria-label="Decrease quantity"
           >
-            −
+            <Minus />
           </Button>
           <span className="text-sm font-medium text-gray-700 min-w-8 text-center">
             {quantity}
@@ -71,7 +72,7 @@ export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
             className="h-8 w-8 p-0 flex items-center justify-center"
             aria-label="Increase quantity"
           >
-            +
+            <Plus />
           </Button>
         </div>
 
