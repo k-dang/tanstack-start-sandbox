@@ -1,5 +1,11 @@
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+} from "@clerk/tanstack-react-start";
 import { Link } from "@tanstack/react-router";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Header() {
@@ -11,11 +17,23 @@ export function Header() {
             <h1 className="text-3xl font-bold text-gray-900">Pokemon Shop</h1>
             <p className="text-gray-600 mt-1">Discover your favorite Pokemon</p>
           </Link>
-          <Button asChild variant="ghost" size="icon" aria-label="View cart">
-            <Link to="/cart">
-              <ShoppingCart className="size-5" />
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="ghost" size="icon" aria-label="View cart">
+              <Link to="/cart">
+                <ShoppingCart className="size-5" />
+              </Link>
+            </Button>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button variant="ghost" size="icon">
+                  <UserIcon className="size-5" />
+                </Button>
+              </SignInButton>
+            </SignedOut>
+          </div>
         </div>
       </div>
     </div>

@@ -18,6 +18,10 @@ const config = defineConfig({
     tanstackStart(),
     viteReact(),
   ],
+  optimizeDeps: {
+    // issue: https://github.com/TanStack/router/issues/5738
+    include: ['@clerk/tanstack-react-start'],
+  },
 })
 
 export default config
