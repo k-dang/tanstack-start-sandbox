@@ -10,7 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as CartRouteImport } from './routes/cart'
+import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthedPrivateRouteImport } from './routes/_authed/private'
+import { Route as AuthedAlsoRouteImport } from './routes/_authed/also'
 import { Route as DemoApiTqTodosRouteImport } from './routes/demo/api.tq-todos'
 
 const CartRoute = CartRouteImport.update({
@@ -18,10 +21,24 @@ const CartRoute = CartRouteImport.update({
   path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthedRoute = AuthedRouteImport.update({
+  id: '/_authed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthedPrivateRoute = AuthedPrivateRouteImport.update({
+  id: '/private',
+  path: '/private',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedAlsoRoute = AuthedAlsoRouteImport.update({
+  id: '/also',
+  path: '/also',
+  getParentRoute: () => AuthedRoute,
 } as any)
 const DemoApiTqTodosRoute = DemoApiTqTodosRouteImport.update({
   id: '/demo/api/tq-todos',
@@ -32,29 +49,44 @@ const DemoApiTqTodosRoute = DemoApiTqTodosRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
+  '/also': typeof AuthedAlsoRoute
+  '/private': typeof AuthedPrivateRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
+  '/also': typeof AuthedAlsoRoute
+  '/private': typeof AuthedPrivateRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authed': typeof AuthedRouteWithChildren
   '/cart': typeof CartRoute
+  '/_authed/also': typeof AuthedAlsoRoute
+  '/_authed/private': typeof AuthedPrivateRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/cart' | '/demo/api/tq-todos'
+  fullPaths: '/' | '/cart' | '/also' | '/private' | '/demo/api/tq-todos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/cart' | '/demo/api/tq-todos'
-  id: '__root__' | '/' | '/cart' | '/demo/api/tq-todos'
+  to: '/' | '/cart' | '/also' | '/private' | '/demo/api/tq-todos'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authed'
+    | '/cart'
+    | '/_authed/also'
+    | '/_authed/private'
+    | '/demo/api/tq-todos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthedRoute: typeof AuthedRouteWithChildren
   CartRoute: typeof CartRoute
   DemoApiTqTodosRoute: typeof DemoApiTqTodosRoute
 }
@@ -68,12 +100,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authed': {
+      id: '/_authed'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authed/private': {
+      id: '/_authed/private'
+      path: '/private'
+      fullPath: '/private'
+      preLoaderRoute: typeof AuthedPrivateRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/also': {
+      id: '/_authed/also'
+      path: '/also'
+      fullPath: '/also'
+      preLoaderRoute: typeof AuthedAlsoRouteImport
+      parentRoute: typeof AuthedRoute
     }
     '/demo/api/tq-todos': {
       id: '/demo/api/tq-todos'
@@ -85,8 +138,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthedRouteChildren {
+  AuthedAlsoRoute: typeof AuthedAlsoRoute
+  AuthedPrivateRoute: typeof AuthedPrivateRoute
+}
+
+const AuthedRouteChildren: AuthedRouteChildren = {
+  AuthedAlsoRoute: AuthedAlsoRoute,
+  AuthedPrivateRoute: AuthedPrivateRoute,
+}
+
+const AuthedRouteWithChildren =
+  AuthedRoute._addFileChildren(AuthedRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthedRoute: AuthedRouteWithChildren,
   CartRoute: CartRoute,
   DemoApiTqTodosRoute: DemoApiTqTodosRoute,
 }
@@ -95,10 +162,11 @@ export const routeTree = rootRouteImport
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }

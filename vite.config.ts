@@ -18,10 +18,8 @@ const config = defineConfig({
     tanstackStart(),
     viteReact(),
   ],
-  optimizeDeps: {
-    // issue: https://github.com/TanStack/router/issues/5738
-    include: ['@clerk/tanstack-react-start'],
-  },
+  // issue: https://github.com/TanStack/router/issues/5738
+  resolve: { alias: [ { find: "use-sync-external-store/shim/index.js", replacement: "react", }, { find: "cookie", replacement: "cookie-es", }, ], },
 })
 
 export default config

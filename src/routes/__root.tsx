@@ -1,4 +1,5 @@
 import { ClerkProvider } from "@clerk/tanstack-react-start";
+import { auth } from "@clerk/tanstack-react-start/server";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import type { QueryClient } from "@tanstack/react-query";
 import {
@@ -8,6 +9,8 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { createServerFn } from "@tanstack/react-start";
+import { DefaultCatchBoundary } from "@/components/default-catch-boundry";
 import { NotFound } from "@/components/not-found";
 import { Toaster } from "@/components/ui/sonner";
 import { Header } from "../components/header";
@@ -18,7 +21,22 @@ interface MyRouterContext {
   queryClient: QueryClient;
 }
 
+const fetchClerkAuth = createServerFn({ method: "GET" }).handler(async () => {
+  const { userId } = await auth();
+
+  return {
+    userId,
+  };
+});
+
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  beforeLoad: async () => {
+    const { userId } = await fetchClerkAuth();
+
+    return {
+      userId,
+    };
+  },
   head: () => ({
     meta: [
       {
@@ -39,7 +57,13 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
     ],
   }),
-
+  errorComponent: (props) => {
+    return (
+      <RootDocument>
+        <DefaultCatchBoundary {...props} />
+      </RootDocument>
+    );
+  },
   component: RootComponent,
   notFoundComponent: () => <NotFound />,
 });
