@@ -3,28 +3,42 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { getCartItems, removeFromCart, updateCartQuantity } from "@/db";
 import { getCartId } from "@/lib/cart-utils";
 
+const getCartItemsInputSchema = z.object({
+  cartId: z.number().nullable(),
+});
+
 const getCartItemsFn = createServerFn({ method: "GET" })
-  .inputValidator((data: { cartId: number | null }) => data)
+  .inputValidator(getCartItemsInputSchema)
   .handler(async ({ data }) => {
     if (!data.cartId) return [];
     return await getCartItems(data.cartId);
   });
 
+const removeFromCartInputSchema = z.object({
+  cartId: z.number().positive("Cart ID must be positive"),
+  pokemonId: z.number().positive("Pokemon ID must be positive"),
+});
+
 const removeFromCartFn = createServerFn({ method: "POST" })
-  .inputValidator((data: { cartId: number; pokemonId: number }) => data)
+  .inputValidator(removeFromCartInputSchema)
   .handler(async ({ data }) => {
     await removeFromCart(data.cartId, data.pokemonId);
     return { success: true };
   });
 
+const updateCartQuantityInputSchema = z.object({
+  cartId: z.number().positive("Cart ID must be positive"),
+  pokemonId: z.number().positive("Pokemon ID must be positive"),
+  quantity: z.number().min(1, "Quantity must be at least 1"),
+});
+
 const updateCartQuantityFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (data: { cartId: number; pokemonId: number; quantity: number }) => data,
-  )
+  .inputValidator(updateCartQuantityInputSchema)
   .handler(async ({ data }) => {
     await updateCartQuantity(data.cartId, data.pokemonId, data.quantity);
     return { success: true };
