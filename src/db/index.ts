@@ -1,6 +1,11 @@
 import { and, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/neon-http";
-import { cartItemsTable, cartTable, pokemonTable } from "@/db/schema";
+import {
+  cartItemsTable,
+  cartTable,
+  pokemonTable,
+  usersTable,
+} from "@/db/schema";
 
 // biome-ignore lint/style/noNonNullAssertion: DATABASE_URL is required for app to function
 const db = drizzle(process.env.DATABASE_URL!);
@@ -11,6 +16,78 @@ export async function getRandomPokemon(limit = 12) {
     .from(pokemonTable)
     .orderBy(sql`RANDOM()`)
     .limit(limit);
+}
+
+export async function getOrCreateUser(clerkId: string) {
+  const [existingUser] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.clerkId, clerkId))
+    .limit(1);
+
+  if (existingUser) {
+    return existingUser;
+  }
+
+  const [newUser] = await db
+    .insert(usersTable)
+    .values({
+      clerkId,
+      updatedAt: sql`now()`,
+    })
+    .returning();
+
+  return newUser;
+}
+
+export async function getUserCart(userId: number) {
+  const [cart] = await db
+    .select()
+    .from(cartTable)
+    .where(eq(cartTable.userId, userId))
+    .limit(1);
+  return cart;
+}
+
+export async function createCartForUser(userId: number) {
+  const [cart] = await db
+    .insert(cartTable)
+    .values({
+      userId,
+      updatedAt: sql`now()`,
+    })
+    .returning();
+  return cart;
+}
+
+export async function mergeGuestCartToUser(
+  guestCartId: number,
+  userId: number,
+) {
+  // Get user's existing cart or create one
+  let userCart = await getUserCart(userId);
+  if (!userCart) {
+    userCart = await createCartForUser(userId);
+    if (!userCart?.id) {
+      throw new Error("Failed to create user cart");
+    }
+  }
+
+  // Get guest cart items
+  const guestItems = await getCartItems(guestCartId);
+
+  // Merge items into user cart
+  for (const item of guestItems) {
+    await addToCart(userCart.id, item.pokemonId, item.quantity);
+  }
+
+  // Delete guest cart items
+  await clearCart(guestCartId);
+
+  // Delete guest cart
+  await db.delete(cartTable).where(eq(cartTable.id, guestCartId));
+
+  return userCart;
 }
 
 export async function createCart() {

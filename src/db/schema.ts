@@ -20,8 +20,16 @@ export const pokemonTable = tanstackSandboxSchema.table(
   (table) => [uniqueIndex("name_idx").on(table.name)],
 );
 
+export const usersTable = tanstackSandboxSchema.table("users", {
+  id: serial("id").primaryKey(),
+  clerkId: text("clerk_id").notNull().unique(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export const cartTable = tanstackSandboxSchema.table("cart", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => usersTable.id),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -46,5 +54,6 @@ export const cartItemsTable = tanstackSandboxSchema.table(
 );
 
 export type Pokemon = typeof pokemonTable.$inferSelect;
+export type User = typeof usersTable.$inferSelect;
 export type Cart = typeof cartTable.$inferSelect;
-export type CartItem = typeof cartItemsTable.$inferSelect; 
+export type CartItem = typeof cartItemsTable.$inferSelect;

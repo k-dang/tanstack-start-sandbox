@@ -13,6 +13,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { DefaultCatchBoundary } from "@/components/default-catch-boundry";
 import { NotFound } from "@/components/not-found";
 import { Toaster } from "@/components/ui/sonner";
+import { getOrCreateUser, mergeGuestCartToUser } from "@/db";
+import { useCartSession } from "@/lib/session";
 import { Header } from "../components/header";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
@@ -29,9 +31,36 @@ const fetchClerkAuth = createServerFn({ method: "GET" }).handler(async () => {
   };
 });
 
+const syncUserAndCart = createServerFn({ method: "GET" }).handler(async () => {
+  const { userId: clerkUserId } = await auth();
+
+  if (!clerkUserId) {
+    return;
+  }
+
+  // biome-ignore lint/correctness/useHookAtTopLevel: <TanStack Start docs do this as well>
+  const session = await useCartSession();
+  const guestCartId = session.data.cartId;
+
+  // Create or get user record
+  const user = await getOrCreateUser(clerkUserId);
+
+  // If guest cart exists, merge it into user's cart
+  if (guestCartId) {
+    await mergeGuestCartToUser(guestCartId, user.id);
+    // Clear guest cart from session
+    await session.update({ cartId: undefined });
+  }
+});
+
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   beforeLoad: async () => {
     const { userId } = await fetchClerkAuth();
+
+    // Sync user and merge guest cart if authenticated
+    if (userId) {
+      await syncUserAndCart();
+    }
 
     return {
       userId,
