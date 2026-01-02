@@ -5,6 +5,9 @@ export const Route = createFileRoute("/_authed")({
     if (!context.userId) {
       throw redirect({
         to: "/sign-in/$",
+        search: {
+          redirect_url: window.location.href,
+        },
       });
     }
   },
