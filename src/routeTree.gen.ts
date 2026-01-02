@@ -15,7 +15,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SignInSplatRouteImport } from './routes/sign-in.$'
 import { Route as AuthedPrivateRouteImport } from './routes/_authed/private'
 import { Route as AuthedAlsoRouteImport } from './routes/_authed/also'
-import { Route as DemoApiTqTodosRouteImport } from './routes/demo/api.tq-todos'
 
 const CartRoute = CartRouteImport.update({
   id: '/cart',
@@ -46,11 +45,6 @@ const AuthedAlsoRoute = AuthedAlsoRouteImport.update({
   path: '/also',
   getParentRoute: () => AuthedRoute,
 } as any)
-const DemoApiTqTodosRoute = DemoApiTqTodosRouteImport.update({
-  id: '/demo/api/tq-todos',
-  path: '/demo/api/tq-todos',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -58,7 +52,6 @@ export interface FileRoutesByFullPath {
   '/also': typeof AuthedAlsoRoute
   '/private': typeof AuthedPrivateRoute
   '/sign-in/$': typeof SignInSplatRoute
-  '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -66,7 +59,6 @@ export interface FileRoutesByTo {
   '/also': typeof AuthedAlsoRoute
   '/private': typeof AuthedPrivateRoute
   '/sign-in/$': typeof SignInSplatRoute
-  '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -76,19 +68,12 @@ export interface FileRoutesById {
   '/_authed/also': typeof AuthedAlsoRoute
   '/_authed/private': typeof AuthedPrivateRoute
   '/sign-in/$': typeof SignInSplatRoute
-  '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/cart'
-    | '/also'
-    | '/private'
-    | '/sign-in/$'
-    | '/demo/api/tq-todos'
+  fullPaths: '/' | '/cart' | '/also' | '/private' | '/sign-in/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/cart' | '/also' | '/private' | '/sign-in/$' | '/demo/api/tq-todos'
+  to: '/' | '/cart' | '/also' | '/private' | '/sign-in/$'
   id:
     | '__root__'
     | '/'
@@ -97,7 +82,6 @@ export interface FileRouteTypes {
     | '/_authed/also'
     | '/_authed/private'
     | '/sign-in/$'
-    | '/demo/api/tq-todos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -105,7 +89,6 @@ export interface RootRouteChildren {
   AuthedRoute: typeof AuthedRouteWithChildren
   CartRoute: typeof CartRoute
   SignInSplatRoute: typeof SignInSplatRoute
-  DemoApiTqTodosRoute: typeof DemoApiTqTodosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -152,13 +135,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedAlsoRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/demo/api/tq-todos': {
-      id: '/demo/api/tq-todos'
-      path: '/demo/api/tq-todos'
-      fullPath: '/demo/api/tq-todos'
-      preLoaderRoute: typeof DemoApiTqTodosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -180,7 +156,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthedRoute: AuthedRouteWithChildren,
   CartRoute: CartRoute,
   SignInSplatRoute: SignInSplatRoute,
-  DemoApiTqTodosRoute: DemoApiTqTodosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
