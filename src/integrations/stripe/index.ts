@@ -1,5 +1,4 @@
 import { auth } from "@clerk/tanstack-react-start/server";
-import { redirect } from "@tanstack/react-router";
 import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import Stripe from "stripe";
