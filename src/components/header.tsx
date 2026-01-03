@@ -1,6 +1,6 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/tanstack-react-start";
 import { Link } from "@tanstack/react-router";
-import { LockIcon, ShoppingCart, UserIcon } from "lucide-react";
+import { LockIcon, Package, ShoppingCart, UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Header() {
@@ -21,6 +21,11 @@ export function Header() {
             <Button asChild variant="ghost" size="icon" aria-label="View cart">
               <Link to="/cart">
                 <ShoppingCart className="size-5" />
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" size="icon" aria-label="View orders">
+              <Link to="/orders">
+                <Package className="size-5" />
               </Link>
             </Button>
             <SignedIn>

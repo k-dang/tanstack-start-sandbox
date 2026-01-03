@@ -15,6 +15,7 @@ import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SignInSplatRouteImport } from './routes/sign-in.$'
 import { Route as AuthedPrivateRouteImport } from './routes/_authed/private'
+import { Route as AuthedOrdersRouteImport } from './routes/_authed/orders'
 import { Route as AuthedAlsoRouteImport } from './routes/_authed/also'
 import { Route as AuthedCheckoutSuccessRouteImport } from './routes/_authed/checkout/success'
 import { Route as AuthedCheckoutCancelRouteImport } from './routes/_authed/checkout/cancel'
@@ -48,6 +49,11 @@ const AuthedPrivateRoute = AuthedPrivateRouteImport.update({
   path: '/private',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedOrdersRoute = AuthedOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AuthedRoute,
+} as any)
 const AuthedAlsoRoute = AuthedAlsoRouteImport.update({
   id: '/also',
   path: '/also',
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/stripe-webhook': typeof StripeWebhookRoute
   '/also': typeof AuthedAlsoRoute
+  '/orders': typeof AuthedOrdersRoute
   '/private': typeof AuthedPrivateRoute
   '/sign-in/$': typeof SignInSplatRoute
   '/checkout/cancel': typeof AuthedCheckoutCancelRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/stripe-webhook': typeof StripeWebhookRoute
   '/also': typeof AuthedAlsoRoute
+  '/orders': typeof AuthedOrdersRoute
   '/private': typeof AuthedPrivateRoute
   '/sign-in/$': typeof SignInSplatRoute
   '/checkout/cancel': typeof AuthedCheckoutCancelRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/stripe-webhook': typeof StripeWebhookRoute
   '/_authed/also': typeof AuthedAlsoRoute
+  '/_authed/orders': typeof AuthedOrdersRoute
   '/_authed/private': typeof AuthedPrivateRoute
   '/sign-in/$': typeof SignInSplatRoute
   '/_authed/checkout/cancel': typeof AuthedCheckoutCancelRoute
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/stripe-webhook'
     | '/also'
+    | '/orders'
     | '/private'
     | '/sign-in/$'
     | '/checkout/cancel'
@@ -113,6 +123,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/stripe-webhook'
     | '/also'
+    | '/orders'
     | '/private'
     | '/sign-in/$'
     | '/checkout/cancel'
@@ -124,6 +135,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/stripe-webhook'
     | '/_authed/also'
+    | '/_authed/orders'
     | '/_authed/private'
     | '/sign-in/$'
     | '/_authed/checkout/cancel'
@@ -182,6 +194,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedPrivateRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/orders': {
+      id: '/_authed/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof AuthedOrdersRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/_authed/also': {
       id: '/_authed/also'
       path: '/also'
@@ -208,6 +227,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthedRouteChildren {
   AuthedAlsoRoute: typeof AuthedAlsoRoute
+  AuthedOrdersRoute: typeof AuthedOrdersRoute
   AuthedPrivateRoute: typeof AuthedPrivateRoute
   AuthedCheckoutCancelRoute: typeof AuthedCheckoutCancelRoute
   AuthedCheckoutSuccessRoute: typeof AuthedCheckoutSuccessRoute
@@ -215,6 +235,7 @@ interface AuthedRouteChildren {
 
 const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedAlsoRoute: AuthedAlsoRoute,
+  AuthedOrdersRoute: AuthedOrdersRoute,
   AuthedPrivateRoute: AuthedPrivateRoute,
   AuthedCheckoutCancelRoute: AuthedCheckoutCancelRoute,
   AuthedCheckoutSuccessRoute: AuthedCheckoutSuccessRoute,
