@@ -91,7 +91,12 @@ function CartComponent() {
   const checkoutMutation = useMutation({
     mutationFn: async () => {
       if (!cartId) throw new Error("Cart ID is required");
-      await createCheckoutSessionFn({ data: { cartId } });
+      const result = await createCheckoutSessionFn({ data: { cartId } });
+      if (result.url) {
+        window.location.href = result.url;
+      } else {
+        throw new Error("Failed to create checkout session");
+      }
     },
     onError: (error) => {
       toast.error(error.message || "Failed to start checkout");
@@ -247,12 +252,14 @@ function CartComponent() {
         </div>
         <Button
           onClick={handleCheckout}
-          disabled={checkoutMutation.isPending}
+          disabled={checkoutMutation.isPending || checkoutMutation.isSuccess}
           className="w-full"
           size="lg"
         >
-          <ShoppingBag className="h-5 w-5 mr-2" />
-          {checkoutMutation.isPending ? "Processing..." : "Checkout"}
+          <ShoppingBag className="h-5 w-5" />
+          {checkoutMutation.isPending || checkoutMutation.isSuccess
+            ? "Processing..."
+            : "Checkout"}
         </Button>
       </div>
     </div>

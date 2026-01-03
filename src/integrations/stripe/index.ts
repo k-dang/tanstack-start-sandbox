@@ -90,10 +90,5 @@ export const createCheckoutSessionFn = createServerFn({ method: "POST" })
       },
     );
 
-    if (session.url) {
-      throw redirect({ href: session.url, replace: true });
-    } else {
-      // TODO: Handle this error better
-      throw new Error("Failed to create checkout session");
-    }
+    return { url: session.url };
   });
