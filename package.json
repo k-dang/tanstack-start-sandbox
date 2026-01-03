@@ -11,7 +11,8 @@
     "lint": "biome lint",
     "check": "biome check",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "stripe:listen": "stripe listen --forward-to localhost:3000/api/stripe-webhook"
   },
   "dependencies": {
     "@clerk/tanstack-react-start": "^0.27.12",
@@ -35,6 +36,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "sonner": "^2.0.7",
+    "stripe": "^20.1.0",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.0.6",
     "vite-tsconfig-paths": "^5.1.4",

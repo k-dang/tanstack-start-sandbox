@@ -3,6 +3,8 @@ import { drizzle } from "drizzle-orm/neon-http";
 import {
   cartItemsTable,
   cartTable,
+  orderItemsTable,
+  ordersTable,
   pokemonTable,
   usersTable,
 } from "@/db/schema";
@@ -209,4 +211,114 @@ export async function clearCart(cartId: number) {
   return await db
     .delete(cartItemsTable)
     .where(eq(cartItemsTable.cartId, cartId));
+}
+
+export async function createOrder(
+  userId: number | null,
+  stripeSessionId: string,
+  cartItems: Array<{
+    pokemonId: number;
+    quantity: number;
+    price: number;
+  }>,
+) {
+  const total = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+
+  const [order] = await db
+    .insert(ordersTable)
+    .values({
+      userId: userId ?? null,
+      stripeSessionId,
+      status: "pending",
+      total,
+      updatedAt: sql`now()`,
+    })
+    .returning();
+
+  if (!order) {
+    throw new Error("Failed to create order");
+  }
+
+  // Insert order items
+  await db.insert(orderItemsTable).values(
+    cartItems.map((item) => ({
+      orderId: order.id,
+      pokemonId: item.pokemonId,
+      quantity: item.quantity,
+      price: item.price,
+    })),
+  );
+
+  return order;
+}
+
+export async function getOrderByStripeSessionId(stripeSessionId: string) {
+  const [order] = await db
+    .select()
+    .from(ordersTable)
+    .where(eq(ordersTable.stripeSessionId, stripeSessionId))
+    .limit(1);
+  return order;
+}
+
+export async function updateOrderStatus(
+  stripeSessionId: string,
+  status: "pending" | "paid" | "failed",
+) {
+  const [order] = await db
+    .update(ordersTable)
+    .set({
+      status,
+      updatedAt: sql`now()`,
+    })
+    .where(eq(ordersTable.stripeSessionId, stripeSessionId))
+    .returning();
+  return order;
+}
+
+export async function getOrdersByUserId(userId: number) {
+  return await db
+    .select()
+    .from(ordersTable)
+    .where(eq(ordersTable.userId, userId))
+    .orderBy(sql`${ordersTable.createdAt} DESC`);
+}
+
+export async function getOrderWithItems(orderId: number) {
+  const order = await db
+    .select()
+    .from(ordersTable)
+    .where(eq(ordersTable.id, orderId))
+    .limit(1);
+
+  if (!order[0]) {
+    return null;
+  }
+
+  const items = await db
+    .select({
+      id: orderItemsTable.id,
+      orderId: orderItemsTable.orderId,
+      pokemonId: orderItemsTable.pokemonId,
+      quantity: orderItemsTable.quantity,
+      price: orderItemsTable.price,
+      createdAt: orderItemsTable.createdAt,
+      pokemon: {
+        id: pokemonTable.id,
+        name: pokemonTable.name,
+        likes: pokemonTable.likes,
+        types: pokemonTable.types,
+      },
+    })
+    .from(orderItemsTable)
+    .innerJoin(pokemonTable, eq(orderItemsTable.pokemonId, pokemonTable.id))
+    .where(eq(orderItemsTable.orderId, orderId));
+
+  return {
+    ...order[0],
+    items,
+  };
 }

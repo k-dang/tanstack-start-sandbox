@@ -1,11 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { getCartItems, removeFromCart, updateCartQuantity } from "@/db";
+import { createCheckoutSessionFn } from "@/integrations/stripe";
 import { getCartId } from "@/lib/cart-utils";
 
 const getCartItemsInputSchema = z.object({
@@ -87,6 +88,16 @@ function CartComponent() {
     },
   });
 
+  const checkoutMutation = useMutation({
+    mutationFn: async () => {
+      if (!cartId) throw new Error("Cart ID is required");
+      await createCheckoutSessionFn({ data: { cartId } });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to start checkout");
+    },
+  });
+
   const handleRemove = (pokemonId: number) => {
     removeMutation.mutate(pokemonId);
   };
@@ -97,6 +108,10 @@ function CartComponent() {
       return;
     }
     updateQuantityMutation.mutate({ pokemonId, quantity: newQuantity });
+  };
+
+  const handleCheckout = () => {
+    checkoutMutation.mutate();
   };
 
   if (cartItems.length === 0) {
@@ -113,6 +128,10 @@ function CartComponent() {
   }
 
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = cartItems.reduce(
+    (sum, item) => sum + 5 * item.quantity,
+    0,
+  );
 
   return (
     <div>
@@ -123,7 +142,7 @@ function CartComponent() {
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 mb-8">
         {cartItems.map((item) => (
           <div
             key={item.id}
@@ -216,6 +235,25 @@ function CartComponent() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Checkout Summary */}
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-lg font-semibold text-gray-900">Total</span>
+          <span className="text-2xl font-bold text-gray-900">
+            ${totalPrice.toFixed(2)}
+          </span>
+        </div>
+        <Button
+          onClick={handleCheckout}
+          disabled={checkoutMutation.isPending}
+          className="w-full"
+          size="lg"
+        >
+          <ShoppingBag className="h-5 w-5 mr-2" />
+          {checkoutMutation.isPending ? "Processing..." : "Checkout"}
+        </Button>
       </div>
     </div>
   );

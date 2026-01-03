@@ -53,7 +53,32 @@ export const cartItemsTable = tanstackSandboxSchema.table(
   ],
 );
 
+export const ordersTable = tanstackSandboxSchema.table("orders", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => usersTable.id),
+  stripeSessionId: text("stripe_session_id").notNull().unique(),
+  status: text("status").notNull().default("pending"), // pending, paid, failed
+  total: integer("total").notNull(), // Total in cents
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const orderItemsTable = tanstackSandboxSchema.table("order_items", {
+  id: serial("id").primaryKey(),
+  orderId: integer("order_id")
+    .notNull()
+    .references(() => ordersTable.id),
+  pokemonId: integer("pokemon_id")
+    .notNull()
+    .references(() => pokemonTable.id),
+  quantity: integer("quantity").notNull().default(1),
+  price: integer("price").notNull(), // Price per item in cents at time of purchase
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export type Pokemon = typeof pokemonTable.$inferSelect;
 export type User = typeof usersTable.$inferSelect;
 export type Cart = typeof cartTable.$inferSelect;
 export type CartItem = typeof cartItemsTable.$inferSelect;
+export type Order = typeof ordersTable.$inferSelect;
+export type OrderItem = typeof orderItemsTable.$inferSelect;
