@@ -24,7 +24,7 @@ const getOrderFn = createServerFn({ method: "GET" })
     return await getOrderWithItems(order.id);
   });
 
-export const Route = createFileRoute("/checkout/success")({
+export const Route = createFileRoute("/_authed/checkout/success")({
   component: SuccessComponent,
   validateSearch: z.object({
     session_id: z.string().optional(),

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/checkout/cancel")({
+export const Route = createFileRoute("/_authed/checkout/cancel")({
   component: CancelComponent,
 });
 

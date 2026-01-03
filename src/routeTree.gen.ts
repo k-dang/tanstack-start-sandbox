@@ -13,10 +13,10 @@ import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SignInSplatRouteImport } from './routes/sign-in.$'
-import { Route as CheckoutSuccessRouteImport } from './routes/checkout/success'
-import { Route as CheckoutCancelRouteImport } from './routes/checkout/cancel'
 import { Route as AuthedPrivateRouteImport } from './routes/_authed/private'
 import { Route as AuthedAlsoRouteImport } from './routes/_authed/also'
+import { Route as AuthedCheckoutSuccessRouteImport } from './routes/_authed/checkout/success'
+import { Route as AuthedCheckoutCancelRouteImport } from './routes/_authed/checkout/cancel'
 
 const CartRoute = CartRouteImport.update({
   id: '/cart',
@@ -37,16 +37,6 @@ const SignInSplatRoute = SignInSplatRouteImport.update({
   path: '/sign-in/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CheckoutSuccessRoute = CheckoutSuccessRouteImport.update({
-  id: '/checkout/success',
-  path: '/checkout/success',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckoutCancelRoute = CheckoutCancelRouteImport.update({
-  id: '/checkout/cancel',
-  path: '/checkout/cancel',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthedPrivateRoute = AuthedPrivateRouteImport.update({
   id: '/private',
   path: '/private',
@@ -57,24 +47,34 @@ const AuthedAlsoRoute = AuthedAlsoRouteImport.update({
   path: '/also',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedCheckoutSuccessRoute = AuthedCheckoutSuccessRouteImport.update({
+  id: '/checkout/success',
+  path: '/checkout/success',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedCheckoutCancelRoute = AuthedCheckoutCancelRouteImport.update({
+  id: '/checkout/cancel',
+  path: '/checkout/cancel',
+  getParentRoute: () => AuthedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
   '/also': typeof AuthedAlsoRoute
   '/private': typeof AuthedPrivateRoute
-  '/checkout/cancel': typeof CheckoutCancelRoute
-  '/checkout/success': typeof CheckoutSuccessRoute
   '/sign-in/$': typeof SignInSplatRoute
+  '/checkout/cancel': typeof AuthedCheckoutCancelRoute
+  '/checkout/success': typeof AuthedCheckoutSuccessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
   '/also': typeof AuthedAlsoRoute
   '/private': typeof AuthedPrivateRoute
-  '/checkout/cancel': typeof CheckoutCancelRoute
-  '/checkout/success': typeof CheckoutSuccessRoute
   '/sign-in/$': typeof SignInSplatRoute
+  '/checkout/cancel': typeof AuthedCheckoutCancelRoute
+  '/checkout/success': typeof AuthedCheckoutSuccessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -83,9 +83,9 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/_authed/also': typeof AuthedAlsoRoute
   '/_authed/private': typeof AuthedPrivateRoute
-  '/checkout/cancel': typeof CheckoutCancelRoute
-  '/checkout/success': typeof CheckoutSuccessRoute
   '/sign-in/$': typeof SignInSplatRoute
+  '/_authed/checkout/cancel': typeof AuthedCheckoutCancelRoute
+  '/_authed/checkout/success': typeof AuthedCheckoutSuccessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -94,18 +94,18 @@ export interface FileRouteTypes {
     | '/cart'
     | '/also'
     | '/private'
+    | '/sign-in/$'
     | '/checkout/cancel'
     | '/checkout/success'
-    | '/sign-in/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/cart'
     | '/also'
     | '/private'
+    | '/sign-in/$'
     | '/checkout/cancel'
     | '/checkout/success'
-    | '/sign-in/$'
   id:
     | '__root__'
     | '/'
@@ -113,17 +113,15 @@ export interface FileRouteTypes {
     | '/cart'
     | '/_authed/also'
     | '/_authed/private'
-    | '/checkout/cancel'
-    | '/checkout/success'
     | '/sign-in/$'
+    | '/_authed/checkout/cancel'
+    | '/_authed/checkout/success'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthedRoute: typeof AuthedRouteWithChildren
   CartRoute: typeof CartRoute
-  CheckoutCancelRoute: typeof CheckoutCancelRoute
-  CheckoutSuccessRoute: typeof CheckoutSuccessRoute
   SignInSplatRoute: typeof SignInSplatRoute
 }
 
@@ -157,20 +155,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignInSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/checkout/success': {
-      id: '/checkout/success'
-      path: '/checkout/success'
-      fullPath: '/checkout/success'
-      preLoaderRoute: typeof CheckoutSuccessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkout/cancel': {
-      id: '/checkout/cancel'
-      path: '/checkout/cancel'
-      fullPath: '/checkout/cancel'
-      preLoaderRoute: typeof CheckoutCancelRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authed/private': {
       id: '/_authed/private'
       path: '/private'
@@ -185,17 +169,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedAlsoRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/checkout/success': {
+      id: '/_authed/checkout/success'
+      path: '/checkout/success'
+      fullPath: '/checkout/success'
+      preLoaderRoute: typeof AuthedCheckoutSuccessRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/checkout/cancel': {
+      id: '/_authed/checkout/cancel'
+      path: '/checkout/cancel'
+      fullPath: '/checkout/cancel'
+      preLoaderRoute: typeof AuthedCheckoutCancelRouteImport
+      parentRoute: typeof AuthedRoute
+    }
   }
 }
 
 interface AuthedRouteChildren {
   AuthedAlsoRoute: typeof AuthedAlsoRoute
   AuthedPrivateRoute: typeof AuthedPrivateRoute
+  AuthedCheckoutCancelRoute: typeof AuthedCheckoutCancelRoute
+  AuthedCheckoutSuccessRoute: typeof AuthedCheckoutSuccessRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedAlsoRoute: AuthedAlsoRoute,
   AuthedPrivateRoute: AuthedPrivateRoute,
+  AuthedCheckoutCancelRoute: AuthedCheckoutCancelRoute,
+  AuthedCheckoutSuccessRoute: AuthedCheckoutSuccessRoute,
 }
 
 const AuthedRouteWithChildren =
@@ -205,8 +207,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthedRoute: AuthedRouteWithChildren,
   CartRoute: CartRoute,
-  CheckoutCancelRoute: CheckoutCancelRoute,
-  CheckoutSuccessRoute: CheckoutSuccessRoute,
   SignInSplatRoute: SignInSplatRoute,
 }
 export const routeTree = rootRouteImport
