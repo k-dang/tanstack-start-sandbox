@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StripeWebhookRouteImport } from './routes/stripe-webhook'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as IndexRouteImport } from './routes/index'
@@ -18,6 +19,11 @@ import { Route as AuthedAlsoRouteImport } from './routes/_authed/also'
 import { Route as AuthedCheckoutSuccessRouteImport } from './routes/_authed/checkout/success'
 import { Route as AuthedCheckoutCancelRouteImport } from './routes/_authed/checkout/cancel'
 
+const StripeWebhookRoute = StripeWebhookRouteImport.update({
+  id: '/stripe-webhook',
+  path: '/stripe-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CartRoute = CartRouteImport.update({
   id: '/cart',
   path: '/cart',
@@ -61,6 +67,7 @@ const AuthedCheckoutCancelRoute = AuthedCheckoutCancelRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
+  '/stripe-webhook': typeof StripeWebhookRoute
   '/also': typeof AuthedAlsoRoute
   '/private': typeof AuthedPrivateRoute
   '/sign-in/$': typeof SignInSplatRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
+  '/stripe-webhook': typeof StripeWebhookRoute
   '/also': typeof AuthedAlsoRoute
   '/private': typeof AuthedPrivateRoute
   '/sign-in/$': typeof SignInSplatRoute
@@ -81,6 +89,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authed': typeof AuthedRouteWithChildren
   '/cart': typeof CartRoute
+  '/stripe-webhook': typeof StripeWebhookRoute
   '/_authed/also': typeof AuthedAlsoRoute
   '/_authed/private': typeof AuthedPrivateRoute
   '/sign-in/$': typeof SignInSplatRoute
@@ -92,6 +101,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/cart'
+    | '/stripe-webhook'
     | '/also'
     | '/private'
     | '/sign-in/$'
@@ -101,6 +111,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/cart'
+    | '/stripe-webhook'
     | '/also'
     | '/private'
     | '/sign-in/$'
@@ -111,6 +122,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authed'
     | '/cart'
+    | '/stripe-webhook'
     | '/_authed/also'
     | '/_authed/private'
     | '/sign-in/$'
@@ -122,11 +134,19 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthedRoute: typeof AuthedRouteWithChildren
   CartRoute: typeof CartRoute
+  StripeWebhookRoute: typeof StripeWebhookRoute
   SignInSplatRoute: typeof SignInSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/stripe-webhook': {
+      id: '/stripe-webhook'
+      path: '/stripe-webhook'
+      fullPath: '/stripe-webhook'
+      preLoaderRoute: typeof StripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cart': {
       id: '/cart'
       path: '/cart'
@@ -207,6 +227,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthedRoute: AuthedRouteWithChildren,
   CartRoute: CartRoute,
+  StripeWebhookRoute: StripeWebhookRoute,
   SignInSplatRoute: SignInSplatRoute,
 }
 export const routeTree = rootRouteImport
