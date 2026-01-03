@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { Loader2, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -256,10 +256,14 @@ function CartComponent() {
           className="w-full"
           size="lg"
         >
-          <ShoppingBag className="h-5 w-5" />
-          {checkoutMutation.isPending || checkoutMutation.isSuccess
-            ? "Processing..."
-            : "Checkout"}
+          {checkoutMutation.isPending || checkoutMutation.isSuccess ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              <ShoppingBag className="h-4 w-4" />
+              Checkout
+            </>
+          )}
         </Button>
       </div>
     </div>

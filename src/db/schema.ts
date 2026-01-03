@@ -53,12 +53,14 @@ export const cartItemsTable = tanstackSandboxSchema.table(
   ],
 );
 
+export const orderStatuses = ["pending", "paid", "failed"] as const;
+
 export const ordersTable = tanstackSandboxSchema.table("orders", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => usersTable.id),
-  stripeSessionId: text("stripe_session_id").notNull().unique(),
-  status: text("status").notNull().default("pending"), // pending, paid, failed
+  status: text({ enum: orderStatuses }).notNull(),
   total: integer("total").notNull(), // Total in cents
+  currency: text("currency").notNull().default("usd"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -76,9 +78,27 @@ export const orderItemsTable = tanstackSandboxSchema.table("order_items", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const stripeCustomerConnectionsTable = tanstackSandboxSchema.table("stripe_customer_connections", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => usersTable.id),
+  stripeCustomerId: text("stripe_customer_id").notNull().unique(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const stripeOrdersTable = tanstackSandboxSchema.table("stripe_orders", {
+  id: serial("id").primaryKey(),
+  orderId: integer("order_id").references(() => ordersTable.id).notNull().unique(),
+  checkoutSessionId: text("checkout_session_id").notNull().unique(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export type Pokemon = typeof pokemonTable.$inferSelect;
 export type User = typeof usersTable.$inferSelect;
 export type Cart = typeof cartTable.$inferSelect;
 export type CartItem = typeof cartItemsTable.$inferSelect;
 export type Order = typeof ordersTable.$inferSelect;
 export type OrderItem = typeof orderItemsTable.$inferSelect;
+export type StripeCustomerConnection = typeof stripeCustomerConnectionsTable.$inferSelect;
+export type StripeOrder = typeof stripeOrdersTable.$inferSelect;

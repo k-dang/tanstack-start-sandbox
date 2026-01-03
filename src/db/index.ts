@@ -4,13 +4,16 @@ import {
   cartItemsTable,
   cartTable,
   orderItemsTable,
+  type orderStatuses,
   ordersTable,
   pokemonTable,
+  stripeCustomerConnectionsTable,
+  stripeOrdersTable,
   usersTable,
 } from "@/db/schema";
 
 // biome-ignore lint/style/noNonNullAssertion: DATABASE_URL is required for app to function
-const db = drizzle(process.env.DATABASE_URL!);
+const db = drizzle(process.env.DATABASE_URL!); // double check if this is included in the bundle
 
 export async function getRandomPokemon(limit = 12) {
   return await db
@@ -215,7 +218,6 @@ export async function clearCart(cartId: number) {
 
 export async function createOrder(
   userId: number | null,
-  stripeSessionId: string,
   cartItems: Array<{
     pokemonId: number;
     quantity: number;
@@ -231,7 +233,6 @@ export async function createOrder(
     .insert(ordersTable)
     .values({
       userId: userId ?? null,
-      stripeSessionId,
       status: "pending",
       total,
       updatedAt: sql`now()`,
@@ -255,30 +256,14 @@ export async function createOrder(
   return order;
 }
 
-export async function getOrderByStripeSessionId(stripeSessionId: string) {
+export async function getOrderById(orderId: number) {
   const [order] = await db
     .select()
     .from(ordersTable)
-    .where(eq(ordersTable.stripeSessionId, stripeSessionId))
+    .where(eq(ordersTable.id, orderId))
     .limit(1);
   return order;
 }
-
-export async function updateOrderStatus(
-  stripeSessionId: string,
-  status: "pending" | "paid" | "failed",
-) {
-  const [order] = await db
-    .update(ordersTable)
-    .set({
-      status,
-      updatedAt: sql`now()`,
-    })
-    .where(eq(ordersTable.stripeSessionId, stripeSessionId))
-    .returning();
-  return order;
-}
-
 export async function getOrdersByUserId(userId: number) {
   return await db
     .select()
@@ -287,38 +272,51 @@ export async function getOrdersByUserId(userId: number) {
     .orderBy(sql`${ordersTable.createdAt} DESC`);
 }
 
-export async function getOrderWithItems(orderId: number) {
-  const order = await db
-    .select()
-    .from(ordersTable)
-    .where(eq(ordersTable.id, orderId))
-    .limit(1);
+export async function updateOrderStatus(
+  orderId: number,
+  status: (typeof orderStatuses)[number],
+) {
+  return await db
+    .update(ordersTable)
+    .set({ status, updatedAt: sql`now()` })
+    .where(eq(ordersTable.id, orderId));
+}
 
-  if (!order[0]) {
-    return null;
-  }
-
-  const items = await db
-    .select({
-      id: orderItemsTable.id,
-      orderId: orderItemsTable.orderId,
-      pokemonId: orderItemsTable.pokemonId,
-      quantity: orderItemsTable.quantity,
-      price: orderItemsTable.price,
-      createdAt: orderItemsTable.createdAt,
-      pokemon: {
-        id: pokemonTable.id,
-        name: pokemonTable.name,
-        likes: pokemonTable.likes,
-        types: pokemonTable.types,
-      },
+export async function createStripeCustomerConnection(
+  userId: number,
+  stripeCustomerId: string,
+) {
+  const [stripeCustomerConnection] = await db
+    .insert(stripeCustomerConnectionsTable)
+    .values({
+      userId,
+      stripeCustomerId,
+      updatedAt: sql`now()`,
     })
-    .from(orderItemsTable)
-    .innerJoin(pokemonTable, eq(orderItemsTable.pokemonId, pokemonTable.id))
-    .where(eq(orderItemsTable.orderId, orderId));
+    .returning();
+  return stripeCustomerConnection;
+}
 
-  return {
-    ...order[0],
-    items,
-  };
+export async function createStripeOrder(
+  orderId: number,
+  checkoutSessionId: string,
+) {
+  const [stripeOrder] = await db
+    .insert(stripeOrdersTable)
+    .values({
+      orderId,
+      checkoutSessionId,
+      updatedAt: sql`now()`,
+    })
+    .returning();
+  return stripeOrder;
+}
+
+export async function getStripeOrder(checkoutSessionId: string) {
+  const [stripeOrder] = await db
+    .select()
+    .from(stripeOrdersTable)
+    .where(eq(stripeOrdersTable.checkoutSessionId, checkoutSessionId))
+    .limit(1);
+  return stripeOrder;
 }

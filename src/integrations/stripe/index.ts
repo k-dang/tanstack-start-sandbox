@@ -3,9 +3,9 @@ import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import Stripe from "stripe";
 import { z } from "zod";
-import { getCartItems, getOrCreateUser } from "@/db";
+import { createOrder, createStripeOrder, getCartItems, getOrCreateUser } from "@/db";
 
-const getStripeClient = createServerOnlyFn(
+export const getStripeClient = createServerOnlyFn(
   () =>
     new Stripe(process.env.STRIPE_SECRET_KEY as string, {
       apiVersion: "2025-12-15.clover",
@@ -26,6 +26,8 @@ async function createCheckoutSession(
   metadata?: Record<string, string>,
 ) {
   const stripe = getStripeClient();
+
+  // TODO maybe create a stripe customer connection
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
@@ -88,6 +90,9 @@ export const createCheckoutSessionFn = createServerFn({ method: "POST" })
         userId: userId ? String(userId) : "",
       },
     );
+
+    const order = await createOrder(userId, lineItems);
+    await createStripeOrder(order.id, session.id);
 
     return { url: session.url };
   });
