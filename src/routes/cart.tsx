@@ -71,13 +71,7 @@ function CartComponent() {
   });
 
   const updateQuantityMutation = useMutation({
-    mutationFn: ({
-      pokemonId,
-      quantity,
-    }: {
-      pokemonId: number;
-      quantity: number;
-    }) => {
+    mutationFn: ({ pokemonId, quantity }: { pokemonId: number; quantity: number }) => {
       if (!cartId) throw new Error("Cart ID is required");
       return updateCartQuantityFn({
         data: { cartId, pokemonId, quantity },
@@ -124,19 +118,14 @@ function CartComponent() {
       <div>
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Cart</h2>
-          <p className="text-gray-500">
-            Your cart is empty. Add some Pokemon to get started!
-          </p>
+          <p className="text-gray-500">Your cart is empty. Add some Pokemon to get started!</p>
         </div>
       </div>
     );
   }
 
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cartItems.reduce(
-    (sum, item) => sum + 5 * item.quantity,
-    0,
-  );
+  const totalPrice = cartItems.reduce((sum, item) => sum + 5 * item.quantity, 0);
 
   return (
     <div>
@@ -189,13 +178,8 @@ function CartComponent() {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <Button
-                    onClick={() =>
-                      handleQuantityChange(item.pokemonId, item.quantity - 1)
-                    }
-                    disabled={
-                      removeMutation.isPending ||
-                      updateQuantityMutation.isPending
-                    }
+                    onClick={() => handleQuantityChange(item.pokemonId, item.quantity - 1)}
+                    disabled={removeMutation.isPending || updateQuantityMutation.isPending}
                     variant="outline"
                     size="sm"
                     className="h-8 w-8 p-0"
@@ -207,13 +191,8 @@ function CartComponent() {
                     {item.quantity}
                   </span>
                   <Button
-                    onClick={() =>
-                      handleQuantityChange(item.pokemonId, item.quantity + 1)
-                    }
-                    disabled={
-                      removeMutation.isPending ||
-                      updateQuantityMutation.isPending
-                    }
+                    onClick={() => handleQuantityChange(item.pokemonId, item.quantity + 1)}
+                    disabled={removeMutation.isPending || updateQuantityMutation.isPending}
                     variant="outline"
                     size="sm"
                     className="h-8 w-8 p-0"
@@ -226,9 +205,7 @@ function CartComponent() {
                 {/* Remove Button */}
                 <Button
                   onClick={() => handleRemove(item.pokemonId)}
-                  disabled={
-                    removeMutation.isPending || updateQuantityMutation.isPending
-                  }
+                  disabled={removeMutation.isPending || updateQuantityMutation.isPending}
                   variant="outline"
                   size="sm"
                   className="text-red-600 hover:text-red-700 hover:bg-red-50"
@@ -246,9 +223,7 @@ function CartComponent() {
       <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <span className="text-lg font-semibold text-gray-900">Total</span>
-          <span className="text-2xl font-bold text-gray-900">
-            ${totalPrice.toFixed(2)}
-          </span>
+          <span className="text-2xl font-bold text-gray-900">${totalPrice.toFixed(2)}</span>
         </div>
         <Button
           onClick={handleCheckout}

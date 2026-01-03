@@ -1,11 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Stripe from "stripe";
-import {
-  clearCart,
-  getOrderById,
-  getStripeOrder,
-  updateOrderStatus,
-} from "@/db";
+import { clearCart, getOrderById, getStripeOrder, updateOrderStatus } from "@/db";
 import { getStripeClient } from "@/integrations/stripe";
 
 export const Route = createFileRoute("/stripe-webhook")({
@@ -28,11 +23,7 @@ export const Route = createFileRoute("/stripe-webhook")({
 
         try {
           const body = await request.text();
-          const event = stripe.webhooks.constructEvent(
-            body,
-            signature,
-            webhookSecret,
-          );
+          const event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
 
           if (event.type === "checkout.session.completed") {
             const session = event.data.object;

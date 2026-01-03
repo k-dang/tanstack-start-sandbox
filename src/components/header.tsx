@@ -1,9 +1,4 @@
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-} from "@clerk/tanstack-react-start";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/tanstack-react-start";
 import { Link } from "@tanstack/react-router";
 import { LockIcon, ShoppingCart, UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";

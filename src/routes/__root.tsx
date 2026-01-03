@@ -2,12 +2,7 @@ import { ClerkProvider } from "@clerk/tanstack-react-start";
 import { auth } from "@clerk/tanstack-react-start/server";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import type { QueryClient } from "@tanstack/react-query";
-import {
-  createRootRouteWithContext,
-  HeadContent,
-  Outlet,
-  Scripts,
-} from "@tanstack/react-router";
+import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { createServerFn } from "@tanstack/react-start";
 import { DefaultCatchBoundary } from "@/components/default-catch-boundry";
@@ -63,7 +58,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     }
 
     return {
-      userId,
+      userId, // clerk user id exists in our context
     };
   },
   head: () => ({
@@ -115,9 +110,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <Header />
-        <div className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          {children}
-        </div>
+        <div className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">{children}</div>
         <Toaster />
         <TanStackDevtools
           config={{

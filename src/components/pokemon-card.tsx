@@ -61,9 +61,7 @@ export default function PokemonCard({ pokemon }: { pokemon: Pokemon }) {
           >
             <Minus />
           </Button>
-          <span className="text-sm font-medium text-gray-700 min-w-8 text-center">
-            {quantity}
-          </span>
+          <span className="text-sm font-medium text-gray-700 min-w-8 text-center">{quantity}</span>
           <Button
             onClick={handleIncrement}
             disabled={isPending}

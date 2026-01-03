@@ -34,13 +34,7 @@ const addPokemonToCart = createServerFn({ method: "POST" })
 // Hook to add Pokemon to cart
 export function useAddToCart() {
   return useMutation({
-    mutationFn: async ({
-      pokemonId,
-      quantity = 1,
-    }: {
-      pokemonId: number;
-      quantity?: number;
-    }) => {
+    mutationFn: async ({ pokemonId, quantity = 1 }: { pokemonId: number; quantity?: number }) => {
       return await addPokemonToCart({
         data: { pokemonId, quantity },
       });

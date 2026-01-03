@@ -1,11 +1,4 @@
-import {
-  integer,
-  pgSchema,
-  serial,
-  text,
-  timestamp,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { integer, pgSchema, serial, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 
 export const tanstackSandboxSchema = pgSchema("tanstack_sandbox");
 
@@ -48,9 +41,7 @@ export const cartItemsTable = tanstackSandboxSchema.table(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
-  (table) => [
-    uniqueIndex("cart_pokemon_idx").on(table.cartId, table.pokemonId),
-  ],
+  (table) => [uniqueIndex("cart_pokemon_idx").on(table.cartId, table.pokemonId)],
 );
 
 export const orderStatuses = ["pending", "paid", "failed"] as const;
@@ -78,17 +69,23 @@ export const orderItemsTable = tanstackSandboxSchema.table("order_items", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const stripeCustomerConnectionsTable = tanstackSandboxSchema.table("stripe_customer_connections", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => usersTable.id),
-  stripeCustomerId: text("stripe_customer_id").notNull().unique(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+export const stripeCustomerConnectionsTable = tanstackSandboxSchema.table(
+  "stripe_customer_connections",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id").references(() => usersTable.id),
+    stripeCustomerId: text("stripe_customer_id").notNull().unique(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+);
 
 export const stripeOrdersTable = tanstackSandboxSchema.table("stripe_orders", {
   id: serial("id").primaryKey(),
-  orderId: integer("order_id").references(() => ordersTable.id).notNull().unique(),
+  orderId: integer("order_id")
+    .references(() => ordersTable.id)
+    .notNull()
+    .unique(),
   checkoutSessionId: text("checkout_session_id").notNull().unique(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
