@@ -84,7 +84,7 @@ export const createCheckoutSessionFn = createServerFn({ method: "POST" })
     const session = await createCheckoutSession(
       lineItems,
       `${baseUrl}/checkout/success`,
-      `${baseUrl}/checkout/cancel`,
+      `${baseUrl}/cart`,
       {
         cartId: String(data.cartId),
         userId: userId ? String(userId) : "",

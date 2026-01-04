@@ -18,7 +18,6 @@ import { Route as AuthedPrivateRouteImport } from './routes/_authed/private'
 import { Route as AuthedOrdersRouteImport } from './routes/_authed/orders'
 import { Route as AuthedAlsoRouteImport } from './routes/_authed/also'
 import { Route as AuthedCheckoutSuccessRouteImport } from './routes/_authed/checkout/success'
-import { Route as AuthedCheckoutCancelRouteImport } from './routes/_authed/checkout/cancel'
 
 const StripeWebhookRoute = StripeWebhookRouteImport.update({
   id: '/stripe-webhook',
@@ -64,11 +63,6 @@ const AuthedCheckoutSuccessRoute = AuthedCheckoutSuccessRouteImport.update({
   path: '/checkout/success',
   getParentRoute: () => AuthedRoute,
 } as any)
-const AuthedCheckoutCancelRoute = AuthedCheckoutCancelRouteImport.update({
-  id: '/checkout/cancel',
-  path: '/checkout/cancel',
-  getParentRoute: () => AuthedRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -78,7 +72,6 @@ export interface FileRoutesByFullPath {
   '/orders': typeof AuthedOrdersRoute
   '/private': typeof AuthedPrivateRoute
   '/sign-in/$': typeof SignInSplatRoute
-  '/checkout/cancel': typeof AuthedCheckoutCancelRoute
   '/checkout/success': typeof AuthedCheckoutSuccessRoute
 }
 export interface FileRoutesByTo {
@@ -89,7 +82,6 @@ export interface FileRoutesByTo {
   '/orders': typeof AuthedOrdersRoute
   '/private': typeof AuthedPrivateRoute
   '/sign-in/$': typeof SignInSplatRoute
-  '/checkout/cancel': typeof AuthedCheckoutCancelRoute
   '/checkout/success': typeof AuthedCheckoutSuccessRoute
 }
 export interface FileRoutesById {
@@ -102,7 +94,6 @@ export interface FileRoutesById {
   '/_authed/orders': typeof AuthedOrdersRoute
   '/_authed/private': typeof AuthedPrivateRoute
   '/sign-in/$': typeof SignInSplatRoute
-  '/_authed/checkout/cancel': typeof AuthedCheckoutCancelRoute
   '/_authed/checkout/success': typeof AuthedCheckoutSuccessRoute
 }
 export interface FileRouteTypes {
@@ -115,7 +106,6 @@ export interface FileRouteTypes {
     | '/orders'
     | '/private'
     | '/sign-in/$'
-    | '/checkout/cancel'
     | '/checkout/success'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -126,7 +116,6 @@ export interface FileRouteTypes {
     | '/orders'
     | '/private'
     | '/sign-in/$'
-    | '/checkout/cancel'
     | '/checkout/success'
   id:
     | '__root__'
@@ -138,7 +127,6 @@ export interface FileRouteTypes {
     | '/_authed/orders'
     | '/_authed/private'
     | '/sign-in/$'
-    | '/_authed/checkout/cancel'
     | '/_authed/checkout/success'
   fileRoutesById: FileRoutesById
 }
@@ -215,13 +203,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedCheckoutSuccessRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_authed/checkout/cancel': {
-      id: '/_authed/checkout/cancel'
-      path: '/checkout/cancel'
-      fullPath: '/checkout/cancel'
-      preLoaderRoute: typeof AuthedCheckoutCancelRouteImport
-      parentRoute: typeof AuthedRoute
-    }
   }
 }
 
@@ -229,7 +210,6 @@ interface AuthedRouteChildren {
   AuthedAlsoRoute: typeof AuthedAlsoRoute
   AuthedOrdersRoute: typeof AuthedOrdersRoute
   AuthedPrivateRoute: typeof AuthedPrivateRoute
-  AuthedCheckoutCancelRoute: typeof AuthedCheckoutCancelRoute
   AuthedCheckoutSuccessRoute: typeof AuthedCheckoutSuccessRoute
 }
 
@@ -237,7 +217,6 @@ const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedAlsoRoute: AuthedAlsoRoute,
   AuthedOrdersRoute: AuthedOrdersRoute,
   AuthedPrivateRoute: AuthedPrivateRoute,
-  AuthedCheckoutCancelRoute: AuthedCheckoutCancelRoute,
   AuthedCheckoutSuccessRoute: AuthedCheckoutSuccessRoute,
 }
 
