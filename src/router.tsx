@@ -14,6 +14,7 @@ export const getRouter = () => {
     defaultPreload: "intent",
   });
 
+  // by default wraps the router in a QueryClientProvider
   setupRouterSsrQueryIntegration({
     router,
     queryClient: rqContext.queryClient,
